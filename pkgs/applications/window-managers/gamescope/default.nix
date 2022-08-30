@@ -73,6 +73,7 @@ stdenv.mkDerivation {
     pipewire
     libcap
     stb
+    libkrb5
   ];
 
   # --debug-layers flag expects these in the path

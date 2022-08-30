@@ -1,6 +1,6 @@
 { config, lib, writeScript, buildFHSUserEnv, steam, glxinfo-i686
 , steam-runtime-wrapped, steam-runtime-wrapped-i686 ? null
-, extraPkgs ? pkgs: [ libkrb5 keyutils ] # extra packages to add to targetPkgs
+, extraPkgs ? pkgs: [ ] # extra packages to add to targetPkgs
 , extraLibraries ? pkgs: [ ] # extra packages to add to multiPkgs
 , extraProfile ? "" # string to append to profile
 , runtimeOnly ? false
@@ -207,6 +207,9 @@ in buildFHSUserEnv rec {
     librsvg
     xorg.libXft
     libvdpau
+
+    libkrb5
+    keyutils
   ]
   ++ steamPackages.steam-runtime-wrapped.overridePkgs
   ++ extraLibraries pkgs;

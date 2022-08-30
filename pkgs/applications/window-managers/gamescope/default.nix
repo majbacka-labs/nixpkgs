@@ -21,6 +21,7 @@
 , stb
 , wlroots
 , libliftoff
+, libkrb5
 , lib
 , makeBinaryWrapper
 }:

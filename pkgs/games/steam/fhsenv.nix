@@ -1,6 +1,6 @@
 { config, lib, writeScript, buildFHSUserEnv, steam, glxinfo-i686
 , steam-runtime-wrapped, steam-runtime-wrapped-i686 ? null
-, extraPkgs ? pkgs: [ ] # extra packages to add to targetPkgs
+, extraPkgs ? pkgs: [ libkrb5 keyutils ] # extra packages to add to targetPkgs
 , extraLibraries ? pkgs: [ ] # extra packages to add to multiPkgs
 , extraProfile ? "" # string to append to profile
 , runtimeOnly ? false

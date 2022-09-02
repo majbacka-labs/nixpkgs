@@ -203,6 +203,32 @@ let
           '';
         };
 
+        after = mkOption {
+          type = with types; listOf str;
+          default = [];
+          description = lib.mdDoc ''
+            Define additional After dependencies for the unit.
+
+            Use any other pre-existing systemd unit file.
+          '';
+          example = literalExpression ''
+            [ "network.target" ]
+          '';
+        };
+
+        requires = mkOption {
+          type = with types; listOf str;
+          default = [];
+          description = lib.mdDoc ''
+            Define additional Requires dependencies for the unit.
+
+            Use any other pre-existing systemd unit file.
+          '';
+          example = literalExpression ''
+            [ "network.target" ]
+          '';
+        };
+
         extraOptions = mkOption {
           type = with types; listOf str;
           default = [];
@@ -229,8 +255,8 @@ let
     dependsOn = map (x: "${cfg.backend}-${x}.service") container.dependsOn;
   in {
     wantedBy = [] ++ optional (container.autoStart) "multi-user.target";
-    after = lib.optionals (cfg.backend == "docker") [ "docker.service" "docker.socket" ] ++ dependsOn;
-    requires = dependsOn;
+    after = lib.optionals (cfg.backend == "docker") [ "docker.service" "docker.socket" ] ++ dependsOn ++ container.after;
+    requires = dependsOn ++ container.requires;
     environment = proxy_env;
 
     path =

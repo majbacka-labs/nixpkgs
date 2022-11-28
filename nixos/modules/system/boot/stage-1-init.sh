@@ -320,7 +320,10 @@ checkFS() {
     if [ "$fsType" = nilfs2 ]; then return 0; fi
 
     # Skip fsck for inherently readonly filesystems.
-    if [ "$fsType" = squashfs ]; then return 0; fi
+    if [ "$fsType" = squashfs ]; then
+        losetup "$device"
+        return 0
+    fi
 
     # Skip fsck.erofs because it is still experimental.
     if [ "$fsType" = erofs ]; then return 0; fi

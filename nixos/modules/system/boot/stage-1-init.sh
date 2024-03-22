@@ -242,9 +242,39 @@ for o in $(cat /proc/cmdline); do
             ln -s "$root" /dev/root
             ;;
         rootfs=*)
+            # If a root device is specified on the kernel command line, determine how
+            # to process it based on its format. For URLs, download the squashfs image
+            # directly. For local storage specified with UUID or LABEL, locate the
+            # device and copy the squashfs file from it, e.g., rootfs=UUID=<uuid>:/path/to/squashfs.
             set -- $(IFS==; echo $o)
-            echo "nameserver 1.1.1.1" >> /etc/resolv.conf
-            wget -O nix-store.squashfs $2
+            if [[ $2 =~ ^https?:// ]]; then
+                echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+                wget -O nix-store.squashfs "$2"
+            else
+                type="$2"
+                id="${3%%:*}"
+                path="${3#*:}"
+
+                case $type in
+                    LABEL)
+                        device="/dev/disk/by-label/$id"
+                        ;;
+                    UUID)
+                        device="/dev/disk/by-uuid/$id"
+                        ;;
+                    *)
+                        device=$id
+                        ;;
+                esac
+
+                fsType=$(blkid -o value -s TYPE "$device")
+                temp_mount="/tmp-squashfs"
+                mkdir -p "$temp_mount"
+                mount -t "$fsType" "$device" "$temp_mount"
+                cp "$temp_mount/$path" nix-store.squashfs
+                umount "$temp_mount"
+                rmdir "$temp_mount"
+            fi
             ;;
         copytoram)
             copytoram=1
